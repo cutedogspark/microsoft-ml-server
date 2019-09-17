@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  sql-server:
+    build: ./sql-server
+    image: garychen/sql-server
+    restart: always
+    environment:
+      - TZ=Asia/Taipei
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=aWR>GxQgk6bNe2D
+      - MSSQL_AGENT_ENABLED=true
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./data/mssql:/var/opt/mssql
+  ml-server:
+    build: ./ml-server
+    image: garychen/ml-server
+    restart: always
+    environment:
+      - TZ=Asia/Taipei
+    ports:
+      - "12800:12800"
+      - "8888:8888"
