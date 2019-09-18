@@ -1,0 +1,10 @@
+DATA_PATH=./data
+
+JUPYTER_WORKSPACE=./workspace
+TIMEZONE=UTC
+MSSQL_SA_PASSWORD=<YourStrong@Passw0rd>
+
+ML_WEBNODE_PASSWORD=Test1234@
+ML_WEBNODE_THUMBPRINT=25706AA4612FC42476B8E6C72A97F58D4BB5721B
+ML_WEBNODE_CONNECTIONSTRING=Server=mssql,1433;Initial Catalog=ML-Server; Integrated Security=False; User Id=SA;Password=<YourStrong@Passw0rd>;
+ML_WEBNODE_COMPUTENODE_URI=http://ml-server_computenode_1:12805,http://ml-server_computenode_2:12805,http://ml-server_computenode_3:12805

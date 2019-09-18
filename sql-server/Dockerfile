@@ -22,13 +22,14 @@ RUN apt-get update && \
 RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - && \
     add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)" && \
     apt-get update && \
-    apt-get install -y mssql-server mssql-mlservices-packages-r  mssql-mlservices-packages-py
-RUN /opt/mssql/bin/checkinstallextensibility.sh && \
+    apt-get install -y mssql-server && \
+    apt-get install -y mssql-mlservices-packages-r  mssql-mlservices-packages-py
+RUN opt/mssql/bin/checkinstallextensibility.sh && \
     chown -R root:root /opt/mssql/bin/launchpadd && \
     chown -R root:root /opt/mssql/bin/setnetbr && \
     mkdir -p /var/opt/mssql-extensibility/data && \
     mkdir -p /var/opt/mssql-extensibility/log
-
+    
 RUN apt-get clean && rm -rf /var/apt/cache/* /tmp/* /var/tmp/*
 
 COPY ./supervisord.conf /usr/local/etc/supervisord.conf

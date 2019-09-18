@@ -14,6 +14,12 @@ docker-compose build
 docker-compose up -d
 ```
 
+## Scale
+
+```
+docker-compose scale computenode=3 webnode=3
+```
+
 ## Exec Sql command 
 
 ```
@@ -60,6 +66,10 @@ az mlserver admin node setup --computenode
 az mlserver admin node setup --webnode --admin-password Test1234@ --confirm-password Test1234@  --uri http://localhost:12805
 az mlserver admin node stop --webnode
 vim /opt/microsoft/mlserver/9.4.7/o16n/Microsoft.MLServer.WebNode/appsettings.json
+
+ConnectionStrings->sqlserver->Connection => "Server=sql-server,1433;Initial Catalog=mlserver; Integrated Security=False; User Id=SA;Password=aWR>GxQgk6bNe2D;"
+ConnectionStrings->sqlserver->Enable => true
+
 az mlserver admin node start --webnode
 ```
 
@@ -83,3 +93,5 @@ Give a ⭐️ if this project helped you!
 
 ***
 _This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_
+
+

@@ -1,25 +1,62 @@
-version: '3'
+version: '3.7'
 
 services:
-  sql-server:
-    build: ./sql-server
-    image: garychen/sql-server
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 12800:12800
+    depends_on:
+      - webnode
+
+  jupyter:
+    build:
+      context: ./ml-server
+    image: garychen/ml-jupyter
+    entrypoint: /opt/microsoft/mlserver/9.4.7/runtime/python/bin/jupyter notebook --no-browser --port=8888 --ip=0.0.0.0 --allow-root --notebook-dir=/workspace
+    ports:
+      - 8888:8888
+    working_dir: /workspace
+    volumes:
+      - ${JUPYTER_WORKSPACE}:/workspace
+
+  mssql:
+    build: 
+      context: ./sql-server
+    image: garychen/mssql
     restart: always
     environment:
-      - TZ=Asia/Taipei
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=aWR>GxQgk6bNe2D
-      - MSSQL_AGENT_ENABLED=true
+      - TZ=${TIMEZONE}
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
-      - ./data/mssql:/var/opt/mssql
-  ml-server:
-    build: ./ml-server
-    image: garychen/ml-server
-    restart: always
+      - ./sql-server/mssql.conf:/var/opt/mssql/mssql.conf
+      - ${DATA_PATH}/mssql:/var/opt/mssql
+
+  computenode:
+    build:
+      context: ./ml-server
+    image: garychen/ml-computenode
     environment:
-      - TZ=Asia/Taipei
-    ports:
-      - "12800:12800"
-      - "8888:8888"
+      - MODE=computenode
+
+  webnode:
+    build:
+      context: ./ml-server
+    image: garychen/ml-webnode
+    environment:
+      - MODE=webnode
+      - ConnectionString=${ML_WEBNODE_CONNECTIONSTRING}
+      - COMPUTENODE_URI=${ML_WEBNODE_COMPUTENODE_URI}
+      - PASSWORD=${ML_WEBNODE_PASSWORD}
+      - Thumbprint=${ML_WEBNODE_THUMBPRINT}
+    depends_on:
+      - computenode
+      - mssql
+    volumes:
+      - type: bind
+        source: ./ml-server/${ML_WEBNODE_THUMBPRINT}.pfx
+        target: /home/webnode_usr/.dotnet/corefx/cryptography/x509stores/root/${ML_WEBNODE_THUMBPRINT}.pfx
+
